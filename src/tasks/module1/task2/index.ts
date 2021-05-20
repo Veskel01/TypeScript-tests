@@ -75,7 +75,7 @@ export function everyFn<T>(
 ): boolean {
   const length: number = array.length;
   if (length < 1) {
-    throw new Error('Tablica nie może być pusta');
+    throw new Error('Array is empty');
   }
   for (let i: number = 0; i < length; i++) {
     if (!callback(array[i], i, array)) {
@@ -90,7 +90,7 @@ export function everyFn<T>(
 export function someFn<T, U>(array: T[], callback: (value: T, index: number, array: T[]) => U): boolean {
   const length: number = array.length;
   if (length < 1) {
-    throw new Error('Tablica nie może być pusta');
+    throw new Error('Array is empty');
   }
   for (let i: number = 0; i < length; i++) {
     if (i in array && callback(array[i], i, array)) {
