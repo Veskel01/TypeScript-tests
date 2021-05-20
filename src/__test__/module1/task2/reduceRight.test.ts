@@ -9,15 +9,22 @@ describe('Reduce right fn tests', () => {
 
   describe('When valid arguments are provided', () => {
     it('Function correctly reverse an array', () => {
+      const result = reduceRightFn([1, 2, 3], (acc, prev, index, arr) => arr);
+      expect(result).toStrictEqual([3, 2, 1]);
+    });
+
+    it('Function correctly split values and returns reveresed array', () => {
       const result = reduceRightFn(
-        [1, 2, 3],
+        [1, 2, 3, 4, 5, 6, 7, 8],
         (acc, val) => {
-          acc.push(val);
+          if (val % 2 === 0) {
+            acc.push(val);
+          }
           return acc;
         },
         [] as number[]
       );
-      expect(result).toStrictEqual([3, 2, 1]);
+      expect(result).toStrictEqual([8, 6, 4, 2]);
     });
   });
 });
