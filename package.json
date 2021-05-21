@@ -20,7 +20,9 @@
   ],
   "author": "Przemocny",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "@types/uuid": "^8.3.0"
+  },
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.31",

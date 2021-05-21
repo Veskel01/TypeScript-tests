@@ -1,12 +1,12 @@
-import names from "./firstNames";
-import secondNames from "./secondNames";
+import names from './firstNames';
+import secondNames from './secondNames';
 
 //random Country
 export function getoneOfRandomCountry(): string {
-  const array: string[] = ["PL", "UK", "USA"];
+  const array: string[] = ['PL', 'UK', 'USA'];
   const randomNumber: number = Math.floor(Math.random() * array.length);
   const length: number = array.length;
-  let result: string = "";
+  let result: string = '';
   for (let i: number = 0; i < length; i++) {
     if (i === randomNumber) {
       result = array[i];
@@ -38,7 +38,6 @@ export function getRandomName(): string {
 //random secondName
 
 let secondName: string;
-
 export function getRandomSecondName(): string {
   const array: string[] = secondNames;
   secondName = array[(array.length * Math.random()) | 0];
