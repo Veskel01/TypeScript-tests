@@ -23,7 +23,9 @@ export function getRandomAge(min: number, max: number): number {
 //random PhoneNumber
 export function getRandomPhoneNumber(): number {
   const numberLength: number = 9;
-  const result: number = ((Math.random() * 9 + 1) * Math.pow(10, numberLength - 1), 10);
+  const result: number = Math.floor(
+    Math.pow(10, numberLength - 1) + Math.random() * 9 * Math.pow(10, numberLength - 1)
+  );
   return result;
 }
 
