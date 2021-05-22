@@ -48,6 +48,7 @@ describe('Paginate array function tests', () => {
       expect(paginateArray(arrayToPaginate, 0, 5)).toStrictEqual([1, 2, 3, 4, 5]);
       expect(paginateArray(arrayToPaginate, 1, 5)).toStrictEqual([6, 7, 8, 9, 10]);
       expect(paginateArray(arrayToPaginate, 2, 5)).toStrictEqual([11, 12, 13, 14, 15]);
+      expect(paginateArray(arrayToPaginate, 2, 5)).toHaveLength(5);
     });
   });
 });
