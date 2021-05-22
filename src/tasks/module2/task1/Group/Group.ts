@@ -1,6 +1,6 @@
-import is from "is_js";
-import { v4 as uuidv4 } from "uuid";
-import Contact from "../Contact/Contact";
+import is from 'is_js';
+import { v4 as uuidv4 } from 'uuid';
+import Contact from '../Contact/Contact';
 
 // error handler
 
@@ -12,7 +12,7 @@ const errorHandler = (error: string) => {
 
 const throwErrorOnEmptyValue = <T>(value: T): void | boolean => {
   if (is.empty(value)) {
-    errorHandler("Value cannot be empty!");
+    errorHandler('Value cannot be empty!');
   }
 };
 
@@ -61,12 +61,12 @@ class Group implements IGroup {
     const result: number = this._contacts.findIndex((singleContact: Contact) => {
       return Object.values(singleContact).includes(contactToRemove);
     });
-    return result !== -1 ? this._contacts.splice(result, 1) : errorHandler("Contact not found");
+    return result !== -1 ? this._contacts.splice(result, 1) : errorHandler('Contact not found');
   }
 
   checkIfContactExists(contactToCheck: string): boolean {
     throwErrorOnEmptyValue(contactToCheck);
-    const regExForSearch: RegExp = new RegExp(contactToCheck, "g");
+    const regExForSearch: RegExp = new RegExp(contactToCheck, 'g');
     const checkIfExistsResult: boolean = this._contacts.some((contact: Contact) => {
       return Object.values(contact).some(
         (valueInContact: string) => valueInContact.match(regExForSearch) && contact.id !== undefined
@@ -77,7 +77,7 @@ class Group implements IGroup {
 
   getContacts() {
     if (is.empty(this._contacts)) {
-      errorHandler("List of Contacts is empty");
+      errorHandler('List of Contacts is empty');
     }
     return this._contacts;
   }
