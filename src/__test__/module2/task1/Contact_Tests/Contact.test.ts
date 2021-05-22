@@ -1,14 +1,15 @@
 import Contact from '../../../../tasks/module2/task1/Contact/Contact';
 import { format } from 'date-fns';
+import * as uuid from 'uuid';
 
+jest.mock('uuid');
 describe('Contact Class tests', () => {
+  let contact: Contact;
+
+  beforeAll(() => {
+    contact = new Contact('Jakub', 'Andrzejewski', 'jakubandrzejewski@op.pl');
+  });
   describe('When invalid arguments are provided into constructor:', () => {
-    let contact: Contact;
-
-    beforeAll(() => {
-      contact = new Contact('Jakub', 'Andrzejewski', 'jakubandrzejewski@op.pl');
-    });
-
     it(' - Should throw Error if name is empty', () => {
       expect(() => new Contact('', 'test', 'test@op.pl')).toThrowError('Value cannot be empty!');
     });
@@ -40,10 +41,16 @@ describe('Contact Class tests', () => {
   });
 
   describe('When valid arguments are provided into constructor:', () => {
-    let contact: Contact;
     const actualLastModifyDate = format(new Date(), 'dd-MM-yyyy');
-    beforeAll(() => {
-      contact = new Contact('Jakub', 'Andrzejewski', 'jakubandrzejewski@vp.pl');
+
+    it(' - Class correctly set id as uuid', () => {
+      jest.spyOn(uuid, 'v4').mockImplementation(() => '12345');
+
+      const contactToTest = new Contact('test1', 'test1surname', 'test1@gmail.com');
+
+      expect(contactToTest.id).toStrictEqual(uuid.v4());
+
+      jest.clearAllMocks();
     });
 
     it(' - Should create a contact as instance of Contact', () => {
