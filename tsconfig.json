@@ -10,7 +10,6 @@
       "@common": ["src/tasks"],
       "@data/*": ["src/data/*"]
     },
-
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,

@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-import is from "is_js";
-import { format } from "date-fns";
+import { v4 as uuidv4 } from 'uuid';
+import is from 'is_js';
+import { format } from 'date-fns';
 
 const errorHandler = (error: string): void => {
   throw new Error(error);
@@ -10,7 +10,7 @@ const errorHandler = (error: string): void => {
 
 const checkIfValueIsEmpty = (value: string): void => {
   if (is.empty(value)) {
-    errorHandler("Value cannot be empty!");
+    errorHandler('Value cannot be empty!');
   }
 };
 
@@ -18,13 +18,13 @@ const checkIfValueIsEmpty = (value: string): void => {
 
 const throwErrorOnIncorrectEmail = (email: string): void => {
   if (is.not.email(email)) {
-    errorHandler("Invalid email");
+    errorHandler('Invalid email');
   }
 };
 
 const returnDate = (): string => {
   const date: Date = new Date();
-  return format(date, "dd-MM-yyyy");
+  return format(date, 'dd-MM-yyyy');
 };
 
 interface IContact {
@@ -39,8 +39,6 @@ interface IContact {
   modifyFirstName: (newFirstName: string) => void;
   modifySurname: (newSurname: string) => void;
   modifyEmail: (newEmail: string) => void;
-
-  _setUpdatedDate: (newEmail: string) => void;
 }
 
 class Contact implements IContact {
@@ -62,10 +60,6 @@ class Contact implements IContact {
     this._lastModifyDate;
   }
 
-  _setUpdatedDate() {
-    this._lastModifyDate = format(new Date(), "dd-MM-yyyy");
-  }
-
   modifyFirstName(newFirstName: string): void {
     checkIfValueIsEmpty(newFirstName);
     this.firstName = newFirstName;
@@ -82,12 +76,6 @@ class Contact implements IContact {
     throwErrorOnIncorrectEmail(newEmail);
     this.email = newEmail;
     this._lastModifyDate = returnDate();
-  }
-
-  containsPhrase(phrase: string) {
-    const regexForPhrase: RegExp = new RegExp(phrase, "g");
-    const result: boolean = Object.values(this).some((word: string) => word.match(regexForPhrase));
-    return result === true ? result : errorHandler(`Word ${phrase} not found`);
   }
 }
 
