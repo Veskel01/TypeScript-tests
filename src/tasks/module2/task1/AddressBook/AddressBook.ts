@@ -1,11 +1,17 @@
-import Contact from "../Contact/Contact";
-import Group from "../Group/Group";
-import is from "is_js";
+import Contact from '../Contact/Contact';
+import Group from '../Group/Group';
+import is from 'is_js';
 
 // error Handler
 
 const errorHandler = (error: string): Error => {
   throw new Error(error);
+};
+
+const checkIfValueIsEmpty = (value: string) => {
+  if (is.empty(value)) {
+    throw new Error('Value cannot be empty');
+  }
 };
 
 // interface to return all contacts in AddressBook
@@ -26,10 +32,8 @@ const findContactInAddressBook = (
   listOfContacts: Contact[],
   listOfGroups: Group[]
 ): IfindContactInAddressBook => {
-  if (is.empty(contactToFind)) {
-    errorHandler(`Contact cannot be empty!`);
-  }
-  const regExForContact: RegExp = new RegExp(contactToFind, "g");
+  checkIfValueIsEmpty(contactToFind);
+  const regExForContact: RegExp = new RegExp(contactToFind, 'g');
   const searchingInContacts: number = listOfContacts.findIndex((singleContact: Contact) => {
     return Object.values(singleContact).some((value: string) => value.match(regExForContact));
   });
@@ -44,7 +48,6 @@ const findContactInAddressBook = (
   }
 };
 
-// main class interface
 interface IAddressBook {
   contacts: Contact[];
   groups: Group[];
@@ -85,7 +88,12 @@ class AddressBook implements IAddressBook {
     return newGroup;
   }
   findContact(contactToFind: string): Contact {
-    const result: IfindContactInAddressBook = findContactInAddressBook(contactToFind, this.contacts, this.groups);
+    checkIfValueIsEmpty(contactToFind);
+    const result: IfindContactInAddressBook = findContactInAddressBook(
+      contactToFind,
+      this.contacts,
+      this.groups
+    );
     const { searchingInContacts, searchingInGroups } = result;
     if (searchingInContacts !== -1) {
       return this.contacts[searchingInContacts];
@@ -95,10 +103,12 @@ class AddressBook implements IAddressBook {
     }
   }
   removeContact(contactToRemove: string): void {
-    if (is.empty(contactToRemove)) {
-      errorHandler(`Contact to remove cannot be empty!`);
-    }
-    const result: IfindContactInAddressBook = findContactInAddressBook(contactToRemove, this.contacts, this.groups);
+    checkIfValueIsEmpty(contactToRemove);
+    const result: IfindContactInAddressBook = findContactInAddressBook(
+      contactToRemove,
+      this.contacts,
+      this.groups
+    );
     const { searchingInContacts, searchingInGroups } = result;
     if (searchingInContacts !== -1) {
       this.contacts.splice(searchingInContacts, 1);
@@ -108,11 +118,14 @@ class AddressBook implements IAddressBook {
     }
   }
   removeGroup(groupName: string): Group[] | Error {
+    checkIfValueIsEmpty(groupName);
     const findGroupIndex: number = this.groups.findIndex((singleGroup: Group) => {
-      const groupNameRegEx: RegExp = new RegExp(groupName, "g");
+      const groupNameRegEx: RegExp = new RegExp(groupName, 'g');
       return singleGroup.groupName.match(groupNameRegEx);
     });
-    return findGroupIndex !== -1 ? this.groups.splice(findGroupIndex, 1) : errorHandler(`Group ${groupName} not found`);
+    return findGroupIndex !== -1
+      ? this.groups.splice(findGroupIndex, 1)
+      : errorHandler(`Group ${groupName} not found`);
   }
   getContacts(): IGetAllContacts {
     const allContactsInAddressBooks: { Contacts: Contact[]; Groups: Group[] } = {
