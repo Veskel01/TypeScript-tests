@@ -5,49 +5,57 @@ import Contact from '../../../../tasks/module2/task1/Contact/Contact';
 describe('AddressBook Tests', () => {
   let addressBook: AddressBook;
   let testGroupInAddressBook: Group;
-  beforeAll(() => {
-    const testContactName: string = 'test1';
-    const testContactSurname: string = 'test1surname';
-    const testContactEmail: string = 'test1@gmail.com';
-
-    const testGroupName: string = 'testGroup';
+  const testGroupName: string = 'TestGroupName';
+  beforeEach(() => {
     addressBook = new AddressBook();
     testGroupInAddressBook = addressBook.addNewGroup(testGroupName);
-
-    addressBook.addNewContact(testContactName, testContactSurname, testContactEmail);
   });
   describe('When invalid arguments are provided:', () => {
     it(' - Throws an error if contact already exists', () => {
       const testContactName: string = 'test1';
       const testContactSurname: string = 'test1surname';
       const testContactEmail: string = 'test1@gmail.com';
+
+      addressBook.addNewContact(testContactName, testContactSurname, testContactEmail);
+
       expect(() =>
         addressBook.addNewContact(testContactName, testContactSurname, testContactEmail)
       ).toThrowError(`Contact ${testContactName} ${testContactSurname} already exists`);
     });
     it(' - Throws an error if invalid group name provided and if group already exists', () => {
-      const testGroupName: string = 'testGroup';
       expect(() => addressBook.addNewGroup('')).toThrowError('Value cannot be empty');
+    });
+
+    it(' - Throws an Error if group already exists', () => {
       expect(() => addressBook.addNewGroup(testGroupName)).toThrowError(
         `Group ${testGroupName} already exists`
       );
     });
 
-    it(' - Throws an Error if contact does not exists in addressBook, in any Group or invalid contact name is provided', () => {
+    it(' - Throws an Error if contact does not exists in addressBoo', () => {
       expect(() => addressBook.findContact('KONTAKT')).toThrowError('Contact not found!');
+    });
+
+    it(' - Throws an Error if invalid contact name to find is provided', () => {
       expect(() => addressBook.findContact('')).toThrowError('Value cannot be empty');
     });
 
-    it(' - Throws an Error if Contact to remove does not exists or invalid Contact name provided', () => {
+    it(' - Throws an Error if Contact to remove does not exists', () => {
       const fakeContact: string = 'FakeContact';
-      expect(() => addressBook.removeContact('')).toThrowError('Value cannot be empty');
       expect(() => addressBook.removeContact(fakeContact)).toThrowError('Contact not found!');
+    });
+
+    it(' - Throws an Error if invalid contact name to remove is provided', () => {
+      expect(() => addressBook.removeContact('')).toThrowError('Value cannot be empty');
     });
 
     it(' - Throws an error if groupName to remove is invalid or does not exist', () => {
       const fakeGroupName: string = 'Testowa grupa';
-      expect(() => addressBook.removeGroup('')).toThrowError('Value cannot be empty');
       expect(() => addressBook.removeGroup(fakeGroupName)).toThrowError(`Group ${fakeGroupName} not found`);
+    });
+
+    it(' - Throws an Error if invalid groupName to remove is provided', () => {
+      expect(() => addressBook.removeGroup('')).toThrowError('Value cannot be empty');
     });
   });
 
@@ -56,9 +64,10 @@ describe('AddressBook Tests', () => {
       const name: string = 'Jakub';
       const surname: string = 'Andrzejewski';
       const email: string = 'jakubandrzejewski@gmail.com';
-      const addressBookLengthBeforeNewContact = addressBook.contacts.length;
+      const expectedLenghOfAdressBook = addressBook.contacts.length + 1;
       const newContact = addressBook.addNewContact(name, surname, email);
-      expect(addressBook.contacts).toHaveLength(addressBookLengthBeforeNewContact + 1);
+
+      expect(addressBook.contacts).toHaveLength(expectedLenghOfAdressBook);
       expect(addressBook.contacts).toContain(newContact);
       expect(newContact).toBeInstanceOf(Contact);
       expect(newContact).toStrictEqual(addressBook.contacts.pop());
@@ -70,35 +79,59 @@ describe('AddressBook Tests', () => {
       expect(addressBook.groups).toContain(newGroup);
     });
 
-    it(' - Method correctly finds new contact in Contact List or in Group', () => {
-      const contactNameToFind: string = 'test1';
-      const contactNameToFindInGroup: string = 'test2';
-      testGroupInAddressBook.createNewContact('test2', 'test2surname', 'test2@gmail.com');
+    it(' - Method correctly find new contact in Contact List', () => {
+      const name: string = 'TestName';
+      const surname: string = 'TestSurname';
+      const email: string = 'testEmail@gmail.com';
+      addressBook.addNewContact(name, surname, email);
 
-      const contactFromContacts = addressBook.findContact(contactNameToFind);
-      const contactFromGroup = addressBook.findContact(contactNameToFindInGroup);
+      const contact = addressBook.findContact(name);
 
-      expect(contactFromContacts).toBeInstanceOf(Contact);
-      expect(contactFromGroup).toBeInstanceOf(Contact);
+      expect(contact.firstName).toStrictEqual(name);
+      expect(contact.surname).toStrictEqual(surname);
+      expect(contact.email).toStrictEqual(email);
+    });
 
-      expect(contactFromContacts.firstName).toStrictEqual(contactNameToFind);
-      expect(contactFromGroup.firstName).toStrictEqual(contactNameToFindInGroup);
+    it(' - Method correctly finds contact in group', () => {
+      const name: string = 'TestName';
+      const surname: string = 'TestSurname';
+      const email: string = 'testEmail@gmail.com';
+      testGroupInAddressBook.createNewContact(name, surname, email);
+
+      const contact = addressBook.findContact(name);
+      expect(contact.firstName).toStrictEqual(name);
+      expect(contact.surname).toStrictEqual(surname);
+      expect(contact.email).toStrictEqual(email);
     });
 
     it(' - Method correctly removes Contact from contact list', () => {
-      const contactNameToRemove: string = 'test1';
+      const name: string = 'TestName';
+      const surname: string = 'TestSurname';
+      const email: string = 'testEmail@gmail.com';
+
+      const contact = addressBook.addNewContact(name, surname, email);
 
       const lengthBeforeRemove = addressBook.contacts.length;
-      addressBook.removeContact(contactNameToRemove);
+
+      addressBook.removeContact(name);
 
       expect(addressBook.contacts.length).not.toStrictEqual(lengthBeforeRemove);
+      expect(addressBook).not.toContain(contact);
+    });
 
-      testGroupInAddressBook.createNewContact('test', 'test', 'test123@gmail.com');
-      const groupLengthBeforeRemove: number = testGroupInAddressBook._contacts.length;
+    it(' - Method correctly removes contact from Group', () => {
+      const name: string = 'TestName';
+      const surname: string = 'TestSurname';
+      const email: string = 'testEmail@gmail.com';
 
-      addressBook.removeContact('test');
+      const contact = testGroupInAddressBook.createNewContact(name, surname, email);
 
-      expect(testGroupInAddressBook._contacts.length).not.toStrictEqual(groupLengthBeforeRemove);
+      const lengthBeforeRemove = testGroupInAddressBook._contacts.length;
+
+      testGroupInAddressBook.removeContact(name);
+
+      expect(testGroupInAddressBook._contacts.length).not.toStrictEqual(lengthBeforeRemove);
+      expect(testGroupInAddressBook._contacts).not.toContain(contact);
     });
 
     it(' - Method correctly returns all contacts from Address Book', () => {
@@ -106,16 +139,6 @@ describe('AddressBook Tests', () => {
 
       expect(addressBook.contacts).toStrictEqual(allContacts.Contacts);
       expect(addressBook.groups).toStrictEqual(allContacts.Groups);
-
-      addressBook.contacts.length = 0;
-      addressBook.groups.length = 0;
-
-      const emptyResultExpected = {
-        Contacts: [],
-        Groups: [],
-      };
-
-      expect(addressBook.getContacts()).toMatchObject(emptyResultExpected);
     });
   });
 });

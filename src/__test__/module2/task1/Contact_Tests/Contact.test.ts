@@ -1,20 +1,26 @@
 import Contact from '../../../../tasks/module2/task1/Contact/Contact';
+import validator from 'validator';
 import { format } from 'date-fns';
-import * as uuid from 'uuid';
 
-jest.mock('uuid');
 describe('Contact Class tests', () => {
   let contact: Contact;
 
-  beforeAll(() => {
+  beforeEach(() => {
     contact = new Contact('Jakub', 'Andrzejewski', 'jakubandrzejewski@op.pl');
   });
+
   describe('When invalid arguments are provided into constructor:', () => {
     it(' - Should throw Error if name is empty', () => {
-      expect(() => new Contact('', 'test', 'test@op.pl')).toThrowError('Value cannot be empty!');
+      const name: string = '';
+      const surname: string = 'testSurname';
+      const email: string = 'testEmail@gmail.com';
+      expect(() => new Contact(name, surname, email)).toThrowError('Value cannot be empty!');
     });
     it(' - Should throw Error if surname is empty', () => {
-      expect(() => new Contact('test', '', 'test@pp.pl')).toThrowError('Value cannot be empty!');
+      const name: string = 'Test';
+      const surname: string = '';
+      const email: string = 'testEmail@gmail.com';
+      expect(() => new Contact(name, surname, email)).toThrowError('Value cannot be empty!');
     });
     it(' - Should trow Error if email is invalid', () => {
       const invalidEmails: string[] = ['jakubandrz', 'jakubandrz@', 'jakubandrz123', 'jandrz@op.', ''];
@@ -25,11 +31,13 @@ describe('Contact Class tests', () => {
     });
 
     it(' - Throws an error if new firstName is invalid', () => {
-      expect(() => contact.modifyFirstName('')).toThrowError('Value cannot be empty!');
+      const newFirstName: string = '';
+      expect(() => contact.modifyFirstName(newFirstName)).toThrowError('Value cannot be empty!');
     });
 
     it(' - Throws an error if new surname is invalid', () => {
-      expect(() => contact.modifySurname('')).toThrowError('Value cannot be empty!');
+      const newSurname: string = '';
+      expect(() => contact.modifySurname(newSurname)).toThrowError('Value cannot be empty!');
     });
     it('Throws an error if new email is invalid', () => {
       const invalidEmails = ['jakubandrz', 'jakubandrz@', 'jakubandrz123', 'jandrz@op.', ''];
@@ -41,20 +49,13 @@ describe('Contact Class tests', () => {
   });
 
   describe('When valid arguments are provided into constructor:', () => {
-    const actualLastModifyDate = format(new Date(), 'dd-MM-yyyy');
-
-    it(' - Class correctly set id as uuid', () => {
-      jest.spyOn(uuid, 'v4').mockImplementation(() => '12345');
-
-      const contactToTest = new Contact('test1', 'test1surname', 'test1@gmail.com');
-
-      expect(contactToTest.id).toStrictEqual(uuid.v4());
-
-      jest.clearAllMocks();
+    let actualLastModifyDateInDateFNSFormat: string;
+    beforeEach(() => {
+      actualLastModifyDateInDateFNSFormat = format(new Date(), 'dd-MM-yyyy');
     });
 
-    it(' - Should create a contact as instance of Contact', () => {
-      expect(contact).toBeInstanceOf(Contact);
+    it(' - Should set UUID as contact id', () => {
+      expect(validator.isUUID(contact.id)).toBeTruthy();
     });
 
     it(' - Contact should have the current date as the creation date with given format', () => {
@@ -63,29 +64,28 @@ describe('Contact Class tests', () => {
     });
 
     it(' - Method should change the name in contact and modify lastModifyDate', () => {
-      const newNames = ['Mateusz', 'Grzegorz', 'Test'];
+      const newNames = ['Anderson', 'Waylon', 'Marvin'];
       newNames.map((newName) => {
         contact.modifyFirstName(newName);
         expect(contact.firstName).toStrictEqual(newName);
-        expect(contact._lastModifyDate).toStrictEqual(actualLastModifyDate);
+        expect(contact._lastModifyDate).toStrictEqual(actualLastModifyDateInDateFNSFormat);
       });
     });
     it(' - Method should change the surname in contact and modify lastModifyDate', () => {
-      const newSurnames = ['Test', 'test1', 'test2'];
+      const newSurnames = ['Stoltenberg', 'Fritsch', 'Ondricka'];
       newSurnames.map((newSurname) => {
         contact.modifySurname(newSurname);
         expect(contact.surname).toStrictEqual(newSurname);
-        expect(contact._lastModifyDate).toStrictEqual(actualLastModifyDate);
+        expect(contact._lastModifyDate).toStrictEqual(actualLastModifyDateInDateFNSFormat);
       });
     });
 
     it(' - Method should change the email in contact and modify lastModifyDate', () => {
-      const newEmails = ['test1@gmail.com', 'test2@gmail.com', 'test3@gmail.com'];
-
+      const newEmails = ['Hassie85@yahoo.com', 'Casper_Hudson36@gmail.com', 'Carlo_Becker@hotmail.com'];
       newEmails.map((newEmail) => {
         contact.modifyEmail(newEmail);
         expect(contact.email).toStrictEqual(newEmail);
-        expect(contact._lastModifyDate).toStrictEqual(actualLastModifyDate);
+        expect(contact._lastModifyDate).toStrictEqual(actualLastModifyDateInDateFNSFormat);
       });
     });
   });

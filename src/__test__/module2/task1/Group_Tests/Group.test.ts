@@ -1,63 +1,48 @@
-import Contact from '../../../../tasks/module2/task1/Contact/Contact';
 import Group from '../../../../tasks/module2/task1/Group/Group';
+import validator from 'validator';
 
 describe('Group Class tests', () => {
   let group: Group;
-  const fakeData = [
-    {
-      name: 'test1',
-      surname: 'surnameTest1',
-      email: 'test1@gmail.com',
-    },
-    {
-      name: 'test2',
-      surname: 'surnameTest2',
-      email: 'test2@gmail.com',
-    },
-    {
-      name: 'test3',
-      surname: 'surnameTest3',
-      email: 'test3@gmail.com',
-    },
-  ];
-  beforeAll(() => {
+  beforeEach(() => {
     group = new Group('Tests');
-    fakeData.map(({ name, surname, email }) => {
-      group.createNewContact(name, surname, email);
-    });
   });
 
   describe('When invalid arguments are provided', () => {
     it(' - Should throws an error if group name is empty', () => {
-      expect(() => new Group('')).toThrowError('Value cannot be empty');
+      const invalidName: string = '';
+      expect(() => new Group(invalidName)).toThrowError('Value cannot be empty');
     });
 
     it(' - Should throws an Erorr if invalid new Group name is provided', () => {
-      expect(() => group.changeGroupName('')).toThrowError('Value cannot be empty');
+      const invalidGroupName: string = '';
+      expect(() => group.changeGroupName(invalidGroupName)).toThrowError('Value cannot be empty');
     });
 
     it(' - Should throws an Error when contact already Exists in group', () => {
       const name: string = 'test1';
       const surname: string = 'surnameTest1';
       const email: string = 'test1@gmail.pl';
+      group.createNewContact(name, surname, email);
       expect(() => group.createNewContact(name, surname, email)).toThrowError(
         `Contact ${name} ${surname} already exists`
       );
     });
 
     it(' - Should throws an Error when contact to be deleted does not exist', () => {
-      const fakeNames: string[] = ['Test1', 'Mateusz', 'Test2', 'Test3', 'Grzegorz'];
+      const fakeNames: string[] = ['Berenice', 'Nils', 'Cordie', 'Ian', 'Giles'];
       fakeNames.map((name) => {
         expect(() => group.removeContact(name)).toThrowError('Contact not found');
       });
     });
 
     it(' - Should throws an Error when empty contact to check provided', () => {
-      expect(() => group.checkIfContactExists('')).toThrowError('Value cannot be empty');
+      const emptyContactName: string = '';
+      expect(() => group.checkIfContactExists(emptyContactName)).toThrowError('Value cannot be empty');
     });
 
     it(' - Should throws an Error if list of contacts is empty', () => {
-      expect(() => new Group('test').getContacts()).toThrow('List of Contacts is empty');
+      const newEmptyGroupName: string = 'test';
+      expect(() => new Group(newEmptyGroupName).getContacts()).toThrow('List of Contacts is empty');
     });
   });
 
@@ -68,31 +53,40 @@ describe('Group Class tests', () => {
       expect(groupName).toStrictEqual(group.groupName);
     });
 
-    it(' - Method correctly add contacts to group with correct class', () => {
-      expect(group.getContacts()).toHaveLength(3);
-      expect(group.getContacts().map((item) => expect(item).toBeInstanceOf(Contact)));
+    it(' - UUID is correctly setted as id', () => {
+      expect(validator.isUUID(group.id)).toBeTruthy();
+    });
+
+    it(' - Method correctly add contacts to group', () => {
+      const name: string = 'Rosalind';
+      const surname: string = 'Mante';
+      const email: string = 'Gisselle82@gmail.com';
+      const lengthBefore: number = group._contacts.length;
+      const expectedLength = lengthBefore + 1;
+      const contact = group.createNewContact(name, surname, email);
+
+      expect(group._contacts.length).toStrictEqual(expectedLength);
+      expect(group._contacts).toContain(contact);
     });
 
     it(' - Method correctly finds contacts in group', () => {
-      const correctlyContactsData: string[] = ['test1', 'surnameTest2', 'test3@gmail.com'];
-      correctlyContactsData.map((value) => {
-        expect(group.checkIfContactExists(value)).toBeTruthy();
-      });
-
-      const fakeContactsData: string[] = ['test4', 'surnameTest5', 'test6@gmail,com'];
-      fakeContactsData.map((value) => {
-        expect(group.checkIfContactExists(value)).toBeFalsy();
-      });
+      const name: string = 'Ian';
+      const surname: string = 'Wuckert';
+      const email: string = 'Lenny_Yundt@gmail.com';
+      const contact = group.createNewContact(name, surname, email);
+      expect(group._contacts).toContain(contact);
     });
 
     it(' - Method correctly removes contacts from group', () => {
-      const correctlyContactsData: string[] = ['test1', 'surnameTest2', 'test3@gmail.com'];
+      const name: string = 'Ian';
+      const surname: string = 'Wuckert';
+      const email: string = 'Lenny_Yundt@gmail.com';
+      const contact = group.createNewContact(name, surname, email);
+      const expectedLength: number = group._contacts.length - 1;
 
-      correctlyContactsData.map((value) => {
-        group.removeContact(value);
-      });
-
-      expect(group._contacts).toHaveLength(0);
+      group.removeContact(name);
+      expect(group._contacts).not.toContain(contact);
+      expect(group._contacts.length).toStrictEqual(expectedLength);
     });
   });
 });

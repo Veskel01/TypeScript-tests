@@ -1,5 +1,5 @@
-import is from "is_js";
-import { v4 as uuidv4 } from "uuid";
+import is from 'is_js';
+import { v4 as uuidv4 } from 'uuid';
 
 const errorHandler = (error: string): void => {
   throw new Error(error);
@@ -7,18 +7,18 @@ const errorHandler = (error: string): void => {
 
 const throwErrorOnEmptyValue = <T>(value: T): void => {
   if (is.empty(value)) {
-    errorHandler("Value cannot be empty!");
-  } else if (typeof value === "number") {
-    if (is.empty(value) || Number.isNaN(value)) {
-      errorHandler("Value cannot be empty or NaN!");
+    errorHandler('Value cannot be empty!');
+  } else if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      errorHandler('Value cannot be NaN!');
     }
   }
 };
 
-type ModifyFunctionKeys = "name" | "price" | "category" | "discount";
+type ModifyFunctionKeys = 'name' | 'price' | 'category' | 'discount';
 type AllowedValues = string | number;
 
-export type changeItemPriceBasedOnQuantity = "remove" | "add";
+export type changeItemPriceBasedOnQuantity = 'remove' | 'add';
 
 export interface ICartItem {
   id: string;
@@ -55,32 +55,41 @@ class CartItem implements ICartItem {
 
   public modify(key: ModifyFunctionKeys, value: AllowedValues): string | number | void {
     throwErrorOnEmptyValue(value);
-    if (typeof value === "string") {
-      if (key === "name") {
+    if (typeof value === 'string') {
+      if (key === 'name') {
         return (this.name = value);
-      } else if (key === "category") {
+      } else if (key === 'category') {
         return (this.category = value);
       }
     }
-    if (typeof value === "number") {
-      if (key === "price") {
+    if (typeof value === 'number') {
+      if (key === 'price') {
+        if (value < 0) throw new Error('New Price cannot be less than 0');
         return (this.price = value);
-      } else if (key === "discount") {
-        value > 100 || value < 0 ? errorHandler("Invalid Discount") : (this.discount = value);
+      } else if (key === 'discount') {
+        value > 100 || value < 0 ? errorHandler('Invalid Discount') : (this.discount = value);
         return (this.price = this.price - (this.price * value) / 100);
       }
     }
-    return errorHandler("Invalid type");
+    return errorHandler('Invalid type');
   }
 
-  public changeItemPriceBasedOnQuantity(
-    key: changeItemPriceBasedOnQuantity,
-    itemQuantity: number
-  ): void {
-    if (key === "add") {
+  public changeItemPriceBasedOnQuantity(key: changeItemPriceBasedOnQuantity, itemQuantity: number): void {
+    if (key === 'add') {
+      if (itemQuantity < 0) {
+        throw new Error('You cannot add a quantity less than 0');
+      }
       this.quantity += itemQuantity;
-    } else {
-      this.quantity -= itemQuantity;
+      this.price *= this.quantity;
+      this.priceOfAllItems = this.price;
+    }
+    if (key !== 'add') {
+      const quantityAfterChange = (this.quantity -= itemQuantity);
+      if (quantityAfterChange < 0) {
+        throw new Error('Quantity of item cannot be less than 0');
+      }
+      this.price *= this.quantity;
+      this.priceOfAllItems = this.price;
     }
   }
 }
