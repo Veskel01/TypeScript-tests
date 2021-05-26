@@ -25,7 +25,6 @@ describe('AddressBook Tests', () => {
     it(' - Throws an error if invalid group name provided and if group already exists', () => {
       expect(() => addressBook.addNewGroup('')).toThrowError('Value cannot be empty');
     });
-
     it(' - Throws an Error if group already exists', () => {
       expect(() => addressBook.addNewGroup(testGroupName)).toThrowError(
         `Group ${testGroupName} already exists`
@@ -99,6 +98,7 @@ describe('AddressBook Tests', () => {
       testGroupInAddressBook.createNewContact(name, surname, email);
 
       const contact = addressBook.findContact(name);
+
       expect(contact.firstName).toStrictEqual(name);
       expect(contact.surname).toStrictEqual(surname);
       expect(contact.email).toStrictEqual(email);
@@ -108,9 +108,7 @@ describe('AddressBook Tests', () => {
       const name: string = 'TestName';
       const surname: string = 'TestSurname';
       const email: string = 'testEmail@gmail.com';
-
       const contact = addressBook.addNewContact(name, surname, email);
-
       const lengthBeforeRemove = addressBook.contacts.length;
 
       addressBook.removeContact(name);

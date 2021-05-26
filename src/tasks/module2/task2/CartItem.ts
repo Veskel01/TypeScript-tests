@@ -41,6 +41,7 @@ class CartItem implements ICartItem {
   public discount: number;
   public quantity: number;
   public priceOfAllItems: number;
+  private basicPrice: number;
   constructor(name: string, price: number, category?: string) {
     this.id = uuidv4();
     throwErrorOnEmptyValue(name);
@@ -51,6 +52,7 @@ class CartItem implements ICartItem {
     this.discount = 0;
     this.quantity = 0;
     this.priceOfAllItems = this.price;
+    this.basicPrice = price;
   }
 
   public modify(key: ModifyFunctionKeys, value: AllowedValues): string | number | void {
@@ -65,10 +67,14 @@ class CartItem implements ICartItem {
     if (typeof value === 'number') {
       if (key === 'price') {
         if (value < 0) throw new Error('New Price cannot be less than 0');
+        this.basicPrice = value;
         return (this.price = value);
       } else if (key === 'discount') {
         value > 100 || value < 0 ? errorHandler('Invalid Discount') : (this.discount = value);
-        return (this.price = this.price - (this.price * value) / 100);
+        const price: number = this.price;
+        const totalValue: number = price - (price * value) / 100;
+        this.price = totalValue;
+        return (this.priceOfAllItems = totalValue);
       }
     }
     return errorHandler('Invalid type');
@@ -79,17 +85,16 @@ class CartItem implements ICartItem {
       if (itemQuantity < 0) {
         throw new Error('You cannot add a quantity less than 0');
       }
-      this.quantity += itemQuantity;
+      this.quantity = itemQuantity === 1 ? (this.quantity += itemQuantity) : (this.quantity = itemQuantity);
       this.price *= this.quantity;
-      this.priceOfAllItems = this.price;
     }
     if (key !== 'add') {
       const quantityAfterChange = (this.quantity -= itemQuantity);
       if (quantityAfterChange < 0) {
         throw new Error('Quantity of item cannot be less than 0');
       }
-      this.price *= this.quantity;
-      this.priceOfAllItems = this.price;
+      this.price = this.quantity * this.basicPrice;
+      this.priceOfAllItems = this.quantity * this.basicPrice;
     }
   }
 }

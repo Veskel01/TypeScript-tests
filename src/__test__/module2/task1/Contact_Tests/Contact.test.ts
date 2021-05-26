@@ -4,9 +4,9 @@ import { format } from 'date-fns';
 
 describe('Contact Class tests', () => {
   let contact: Contact;
-
+  const contactName = 'Jakub';
   beforeEach(() => {
-    contact = new Contact('Jakub', 'Andrzejewski', 'jakubandrzejewski@op.pl');
+    contact = new Contact(contactName, 'Andrzejewski', 'jakubandrzejewski@op.pl');
   });
 
   describe('When invalid arguments are provided into constructor:', () => {
