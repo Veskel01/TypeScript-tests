@@ -1,4 +1,4 @@
-interface ISwitch {
+export interface ISwitch {
   cases: caseTuple[];
   add: (condition: boolean, onErrorCallback: () => void) => void;
   isValid: () => boolean | undefined;
