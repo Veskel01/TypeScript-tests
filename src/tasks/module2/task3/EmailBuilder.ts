@@ -1,19 +1,11 @@
-import Email, { IEmail } from "./Email";
-import {
-  throwErrorOnInvalidEmail,
-  throwErrorOnInvalidHTML,
-  throwErrorOnInvalidTitle,
-} from "./helpers";
+import Email, { IEmail } from './Email';
+import { throwErrorOnInvalidEmail, throwErrorOnInvalidHTML, throwErrorOnInvalidTitle } from './helpers';
 
-const errorHandler = (error: string) => {
-  throw new Error(error);
-};
-
-interface IEmailBuilder {
+export interface IEmailBuilder {
   setSendEmailFrom: (from: string) => this;
   setSendEmailTo: (to: string) => this;
-  setEmailCC: (carbonCopy: string) => this;
-  setEmailBCC: (blindCarbonCopy: string) => this;
+  setEmailCC: (carbonCopy: string | string[]) => string[];
+  setEmailBCC: (blindCarbonCopy: string | string[]) => string[];
   setEmailTitle: (title: string) => this;
   setHTML: (HTML: string) => this;
   build: () => IEmail;
@@ -23,12 +15,12 @@ class EmailBuilder implements IEmailBuilder {
   private _email: IEmail;
   constructor() {
     this._email = {
-      from: "",
-      to: "",
+      from: '',
+      to: '',
       cc: [],
       bcc: [],
-      title: "",
-      HTML: "",
+      title: '',
+      HTML: '',
     };
   }
 
@@ -42,20 +34,32 @@ class EmailBuilder implements IEmailBuilder {
     return this;
   }
 
-  public setEmailCC(carbonCopy: string): this {
-    this._email.cc = [];
-    if (!this._email.cc.includes(carbonCopy)) {
-      this._email.cc.push(carbonCopy);
+  public setEmailCC(carbonCopy: string | string[]): string[] {
+    const emails: string[] = this._email.cc as string[];
+    if (Array.isArray(carbonCopy)) {
+      carbonCopy.map((email: string) => {
+        throwErrorOnInvalidEmail(email);
+        if (!emails.includes(email)) emails.push(email);
+      });
+    } else if (typeof carbonCopy === 'string') {
+      throwErrorOnInvalidEmail(carbonCopy);
+      if (!emails.includes(carbonCopy)) emails.push(carbonCopy);
     }
-    return this;
+    return (this._email.cc = emails);
   }
 
-  public setEmailBCC(blindCarbonCopy: string): this {
-    this._email.bcc = [];
-    if (!this._email.bcc.includes(blindCarbonCopy)) {
-      this._email.bcc.push(blindCarbonCopy);
+  public setEmailBCC(blindCarbonCopy: string | string[]): string[] {
+    const emails: string[] = this._email.bcc as string[];
+    if (Array.isArray(blindCarbonCopy)) {
+      blindCarbonCopy.map((email: string) => {
+        throwErrorOnInvalidEmail(email);
+        if (!emails.includes(email)) emails.push(email);
+      });
+    } else if (typeof blindCarbonCopy === 'string') {
+      throwErrorOnInvalidEmail(blindCarbonCopy);
+      if (!emails.includes(blindCarbonCopy)) emails.push(blindCarbonCopy);
     }
-    return this;
+    return (this._email.bcc = emails);
   }
 
   public setEmailTitle(title: string): this {
@@ -64,6 +68,7 @@ class EmailBuilder implements IEmailBuilder {
   }
 
   public setHTML(HTML: string): this {
+    throwErrorOnInvalidHTML(HTML);
     this._email.HTML = HTML;
     return this;
   }
@@ -78,7 +83,7 @@ class EmailBuilder implements IEmailBuilder {
       this._email.bcc.forEach((blindCarbonCopy) => throwErrorOnInvalidEmail(blindCarbonCopy));
     }
     throwErrorOnInvalidTitle(this._email.title);
-    throwErrorOnInvalidHTML(this._email.HTML);
+
     const email: IEmail = new Email(
       this._email.from,
       this._email.to,
