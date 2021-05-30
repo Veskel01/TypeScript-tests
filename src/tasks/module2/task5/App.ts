@@ -1,8 +1,7 @@
-import { access } from "fs/promises";
-import User, { IUser } from "./User";
-import { AccessLevelType } from "./__helpers";
+import User, { IUser } from './User';
+import { AccessLevelType } from './__helpers';
 
-interface IApp {
+export interface IApp {
   users: IUser[];
   createNewAdmin: (
     firstName: string,
@@ -41,15 +40,7 @@ class App implements IApp {
     email: string,
     accessLevel: AccessLevelType
   ): IUser {
-    const newAdmin: IUser = new User(
-      firstName,
-      surname,
-      birthDate,
-      password,
-      gender,
-      email,
-      accessLevel
-    );
+    const newAdmin: IUser = new User(firstName, surname, birthDate, password, gender, email, accessLevel);
     this.users.push(newAdmin);
     return newAdmin;
   }

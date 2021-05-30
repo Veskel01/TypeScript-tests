@@ -1,4 +1,4 @@
-import is from "is_js";
+import is from 'is_js';
 
 const errorHandler = (error: string): void => {
   throw new Error(error);
@@ -8,18 +8,18 @@ const errorHandler = (error: string): void => {
 
 export const throwErrorOnInvalidName = (name: string): void => {
   if (is.empty(name)) {
-    errorHandler("First name cannot be empty");
+    errorHandler('Name cannot be empty');
   }
 };
 
 // gender validation;
 
-type GenderTypes = "male" | "female" | string;
+export type GenderTypes = 'male' | 'female' | string;
 
 export const throwErrorOnInvalidGender = (gender: GenderTypes): void => {
-  const genders: GenderTypes[] = ["male", "female"];
+  const genders: GenderTypes[] = ['male', 'female'];
   if (!genders.includes(gender)) {
-    errorHandler("Allowed genders: male,female");
+    errorHandler('Allowed genders: male,female');
   }
 };
 
@@ -29,16 +29,16 @@ type TypesForIfInEmailPasswordOrName = void | boolean;
 
 export const throwErrorOnInvalidEmail = (email: string): TypesForIfInEmailPasswordOrName => {
   if (is.not.email(email)) {
-    errorHandler("Invalid email");
+    errorHandler('Invalid email');
   }
 };
 
 // password validation
 
 export const throwErrorOnInvalidPassword = (password: string): boolean => {
-  const regExpForPassword: RegExp = /^(?=.*?[a-zA-Z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}/;
-  if (!password.match(regExpForPassword)) {
-    errorHandler("Invalid password");
+  const passwordRegex: RegExp = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})');
+  if (!password.match(passwordRegex)) {
+    errorHandler('Invalid password');
   }
   return true;
 };
@@ -47,10 +47,10 @@ export const throwErrorOnInvalidPassword = (password: string): boolean => {
 
 export const throwErrorOnInvalidBirthDate = (birthDate: string): void => {
   if (
-    Object.prototype.toString.call(new Date(birthDate)) !== "[object Date]" ||
+    Object.prototype.toString.call(new Date(birthDate)) !== '[object Date]' ||
     Number.isNaN(new Date(birthDate).getTime())
   ) {
-    errorHandler("Invalid Date");
+    errorHandler('Invalid Date');
   } else if (is.future(new Date(birthDate))) {
     errorHandler("You can't be from the future");
   } else if (new Date(birthDate).getFullYear() <= 1880) {
@@ -58,4 +58,4 @@ export const throwErrorOnInvalidBirthDate = (birthDate: string): void => {
   }
 };
 
-export type AccessLevelType = "user" | "admin";
+export type AccessLevelType = 'user' | 'admin';

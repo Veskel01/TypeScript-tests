@@ -1,4 +1,4 @@
-import { addDays, differenceInBusinessDays, lightFormat } from 'date-fns';
+import { addDays, lightFormat, differenceInCalendarDays, isPast } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { IBook } from './Book';
 import { IUser } from './User';
@@ -11,21 +11,20 @@ const errorHandler = (error: string): void => {
 
 // date methods
 
-const getActualDateWithFormat = (): string => {
-  return lightFormat(new Date(), 'MM/dd/yyyy');
+const getActualDateWithFormat = (): Date => {
+  return new Date();
 };
 
-const getReturnDateWithFormat = (): string => {
+const getReturnDateWithFormat = (): Date => {
   const penaltyDate: Date = addDays(new Date(), 7);
-  return lightFormat(penaltyDate, 'MM/dd/yyyy');
+  return penaltyDate;
 };
 
-const getReturnDateWithoutFormat: Date = addDays(new Date(getReturnDateWithFormat()), 7);
 export interface IBooking {
   id: string;
   userID: string;
-  borrowDate: string;
-  returnDate: string;
+  borrowDate: Date;
+  returnDate: Date;
   bookID: string;
   bookTitle: string;
   penalty: number;
@@ -43,14 +42,14 @@ export interface IBooking {
     allBorrowsList: IBooking[],
     allBorrowedBooks: IBook[],
     book: IBook
-  ) => void;
+  ) => boolean;
 }
 
 class Booking implements IBooking {
   public id: string;
   public userID: string;
-  public borrowDate: string;
-  public returnDate: string;
+  public borrowDate: Date;
+  public returnDate: Date;
   public bookID: string;
   public bookTitle: string;
   public penalty: number;
@@ -77,10 +76,6 @@ class Booking implements IBooking {
     allBooks.splice(bookIndex, 1);
     allBorrowList.push(this);
     allBorrowedBooks.push(book);
-    if (new Date() > getReturnDateWithoutFormat) {
-      const difference: number = differenceInBusinessDays(new Date(), getReturnDateWithoutFormat);
-      this.penalty = difference * 5;
-    }
     return this;
   }
 
@@ -90,7 +85,12 @@ class Booking implements IBooking {
     allBorrowsList: IBooking[],
     allBorrowedBooks: IBook[],
     book: IBook
-  ): void {
+  ): boolean {
+    const { returnDate } = allBorrowsList[borrowIndex];
+    if (isPast(returnDate)) {
+      const difference: number = differenceInCalendarDays(new Date(), returnDate);
+      allBorrowsList[borrowIndex].penalty = difference * 5;
+    }
     const { penalty } = allBorrowsList[borrowIndex];
     if (penalty === 0) {
       const bookIdInBorrowedBooks: number = allBorrowedBooks.findIndex(
@@ -99,10 +99,10 @@ class Booking implements IBooking {
       allBooks.push(book);
       allBorrowedBooks.splice(bookIdInBorrowedBooks, 1);
       allBorrowsList.splice(borrowIndex, 1);
-      return console.log(`Book with title: ${book.title} returned succesfully !`);
     } else {
-      errorHandler(`The penalty for keeping the book too long is ${penalty} zł. You can't return the book`);
+      errorHandler(`You cannot return the book because a penalty was setted`);
     }
+    return true;
   }
 }
 

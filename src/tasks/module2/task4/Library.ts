@@ -5,14 +5,14 @@ import Booking, { IBooking } from './Booking';
 const errorHandler = (error: string) => {
   throw new Error(error);
 };
-interface ILibrary {
+export interface ILibrary {
   users: IUser[];
   allBooks: IBook[];
   allBorrowsList: any[];
   allBorrowedBooks: any[];
   addNewBook: (title: string, author: string, description: string) => IBook;
   addNewUser: (firstName: string, surname: string, email: string) => IUser;
-  borrowBook: (user: IUser, book: IBook) => string;
+  borrowBook: (user: IUser, book: IBook) => IBooking;
   returnBook: (book: IBook, user: IUser) => void;
 }
 
@@ -52,7 +52,7 @@ class Library implements ILibrary {
     return newUser;
   }
 
-  public borrowBook(user: IUser, book: IBook): string {
+  public borrowBook(user: IUser, book: IBook): IBooking {
     const findUserInLibrary = this._findUser(this.users, user);
     const findBookInLibrary = this._findBook(this.allBooks, book);
     if (findUserInLibrary === -1) {
@@ -68,7 +68,7 @@ class Library implements ILibrary {
       book,
       user
     );
-    return `Borrow nr:${borrowedBook.id} succesfully created`;
+    return borrowedBook;
   }
 
   public returnBook(book: IBook, user: IUser): void {

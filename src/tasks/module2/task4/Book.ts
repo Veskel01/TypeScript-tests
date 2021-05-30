@@ -1,14 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import is from 'is_js';
 
-const arrayOfImages: string[] = [
-  'image1',
-  'image2',
-  'image3',
-  'image4',
-  'image5',
-  'image6',
-];
+export const arrayOfImages: string[] = ['image1', 'image2', 'image3', 'image4', 'image5', 'image6'];
 
 const errorHandler = (error: string): void => {
   throw new Error(error);

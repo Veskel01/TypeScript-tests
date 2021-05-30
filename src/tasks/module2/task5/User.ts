@@ -5,7 +5,7 @@ import {
   throwErrorOnInvalidGender,
   throwErrorOnInvalidName,
   throwErrorOnInvalidPassword,
-} from "./__helpers";
+} from './__helpers';
 
 const errorHandler = (error: string): void => {
   throw new Error(error);
@@ -27,12 +27,7 @@ export interface IUser {
     newAccessLevel: AccessLevelType,
     arrayOfUsers: IUser[]
   ) => void;
-  changeUserPassword: (
-    admin: IUser,
-    user: IUser,
-    newPassword: string,
-    arrayOfUsers: IUser[]
-  ) => void;
+  changeUserPassword: (admin: IUser, user: IUser, newPassword: string, arrayOfUsers: IUser[]) => void;
 }
 
 class User implements IUser {
@@ -85,9 +80,9 @@ class User implements IUser {
     newAccessLevel: AccessLevelType,
     arrayOfUsers: IUser[]
   ): void {
-    if (admin.accessLevel === "admin" && arrayOfUsers.includes(user)) {
-      if (user.accessLevel === "admin") {
-        errorHandler("You cannot change the password of another admin");
+    if (admin.accessLevel === 'admin' && arrayOfUsers.includes(user)) {
+      if (user.accessLevel === 'admin') {
+        errorHandler('You cannot change the accessLevel of another admin');
       } else {
         user.accessLevel = newAccessLevel;
       }
@@ -98,14 +93,14 @@ class User implements IUser {
 
   public changeUserPassword(admin: IUser, user: IUser, newPassword: string, arrayOfUsers: IUser[]) {
     throwErrorOnInvalidPassword(newPassword);
-    if (admin.accessLevel === "admin" && arrayOfUsers.includes(admin)) {
-      if (user.accessLevel === "admin") {
-        errorHandler("You cannot change the password of another admin");
+    if (admin.accessLevel === 'admin' && arrayOfUsers.includes(admin)) {
+      if (user.accessLevel === 'admin') {
+        errorHandler('You cannot change password of another admin');
       } else {
         user.password = newPassword;
       }
     } else {
-      errorHandler("Access denied!");
+      errorHandler('Access denied!');
     }
   }
 }
